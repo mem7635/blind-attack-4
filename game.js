@@ -1,7 +1,7 @@
 // game.js - Connect 4 Game Logic with AI
-// Version 1.2.0
+// Version 1.3.0
 
-const VERSION = '1.2.0';
+const VERSION = '1.3.0';
 
 const ROWS = 6;
 const COLS = 7;
@@ -19,10 +19,10 @@ const DIFFICULTY_LEVELS = {
 
 // AI strategy mix - what percentage of moves use minimax vs random
 const DIFFICULTY_STRATEGY = {
-    'easy': { minimax: 0.33, random: 0.67 },        // 1/3 smart, 2/3 random
-    'medium': { minimax: 0.60, random: 0.40 },      // 60% smart, 40% random
-    'hard': { minimax: 0.85, random: 0.15 },        // 85% smart, 15% random
-    'very-hard': { minimax: 0.95, random: 0.05 }    // 95% smart, 5% random
+    'easy': { minimax: 0.20, random: 0.80 },        // 1/5 smart, 4/5 random
+    'medium': { minimax: 0.33, random: 0.67 },      // 1/3 smart, 2/3 random
+    'hard': { minimax: 0.50, random: 0.50 },        // 1/2 smart, 1/2 random
+    'very-hard': { minimax: 0.67, random: 0.33 }    // 2/3 smart, 1/3 random
 };
 
 class Connect4Game {
