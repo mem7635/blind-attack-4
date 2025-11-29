@@ -38,6 +38,7 @@ class BlindAttack4App {
         this.moveCountDisplay = document.getElementById('move-count');
         this.blunderCountDisplay = document.getElementById('blunder-count');
         this.quitBtn = document.getElementById('quit-btn');
+        this.blindBoardCanvas = document.getElementById('blind-board-canvas');
 
         // Result screen
         this.resultTitle = document.getElementById('result-title');
@@ -58,6 +59,7 @@ class BlindAttack4App {
         // Initialize renderers
         this.gameBoardRenderer = new BoardRenderer(this.gameBoard);
         this.replayBoardRenderer = new BoardRenderer(this.replayBoard);
+        this.blindBoardRenderer = new BoardRenderer(this.blindBoardCanvas);
     }
 
     attachEventListeners() {
@@ -111,8 +113,15 @@ class BlindAttack4App {
     startNewGame() {
         this.game = new Connect4Game(this.difficulty);
         this.lastAIMove = null;
+        this.drawEmptyBoard();
         this.updateGameUI();
         this.showScreen('game');
+    }
+
+    drawEmptyBoard() {
+        // Draw an empty Connect 4 board for visual reference
+        const emptyBoard = Array(6).fill(null).map(() => Array(7).fill(0));
+        this.blindBoardRenderer.draw(emptyBoard);
     }
 
     updateGameUI(animateBotMove = false) {
@@ -176,8 +185,27 @@ class BlindAttack4App {
         }
     }
 
+    flashColumn(col) {
+        // Flash the column button yellow to show it was clicked
+        const button = document.querySelector(`[data-column="${col}"]`);
+        if (button) {
+            button.classList.remove('flash-column');
+            // Force reflow
+            void button.offsetWidth;
+            button.classList.add('flash-column');
+            
+            // Remove class after animation completes
+            setTimeout(() => {
+                button.classList.remove('flash-column');
+            }, 500);
+        }
+    }
+
     handlePlayerMove(col) {
         if (!this.game.isValidMove(col)) return;
+
+        // Flash the column button for visual feedback
+        this.flashColumn(col);
 
         // Check for blunder before making the move
         this.game.detectBlunder(col);
