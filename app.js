@@ -237,6 +237,9 @@ class BlindAttack4App {
     handlePlayerMove(col) {
         if (!this.game.isValidMove(col)) return;
 
+        // Disable buttons during move processing
+        this.columnButtons.forEach(btn => btn.disabled = true);
+
         // Flash the column for visual feedback (player move)
         this.flashColumn(col, true);
 
@@ -258,37 +261,42 @@ class BlindAttack4App {
             return;
         }
 
-        // Get AI move
-        const aiMove = this.game.getAIMove();
-        this.lastAIMove = aiMove;
-        
-        if (aiMove !== null) {
-            this.game.makeMove(aiMove, AI);
+        // Delay AI move by 1 second to show player's flash clearly
+        setTimeout(() => {
+            // Get AI move
+            const aiMove = this.game.getAIMove();
+            this.lastAIMove = aiMove;
             
-            // Flash AI's column (only on easy mode - red)
-            this.flashColumn(aiMove, false);
-            
-            // Check if AI won
-            winner = this.game.checkWinner();
-            if (winner === AI) {
-                this.endGame('ai');
-                return;
+            if (aiMove !== null) {
+                this.game.makeMove(aiMove, AI);
+                
+                // Flash AI's column (only on easy mode - red)
+                this.flashColumn(aiMove, false);
+                
+                // Check if AI won
+                winner = this.game.checkWinner();
+                if (winner === AI) {
+                    this.endGame('ai');
+                    return;
+                }
+
+                if (this.game.isDraw()) {
+                    this.endGame('draw');
+                    return;
+                }
             }
 
-            if (this.game.isDraw()) {
-                this.endGame('draw');
-                return;
-            }
-        }
-
-        // Update UI with animation and speech for bot move
-        this.updateGameUI(true);
+            // Update UI with animation and speech for bot move
+            this.updateGameUI(true);
+        }, 1000); // 1 second delay
     }
 
     endGame(result) {
         // Update result display
         if (result === 'player') {
             this.resultTitle.textContent = '🎉 You Win!';
+            // Launch confetti for player win!
+            this.launchConfetti();
         } else if (result === 'ai') {
             this.resultTitle.textContent = '🤖 AI Wins!';
         } else {
@@ -305,6 +313,58 @@ class BlindAttack4App {
         this.replayMoves = [...this.game.moveHistory];
 
         this.showScreen('result');
+    }
+
+    launchConfetti() {
+        const colors = ['#fbbf24', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899'];
+        const confettiCount = 80;
+        
+        for (let i = 0; i < confettiCount; i++) {
+            setTimeout(() => {
+                this.createConfettiPiece(colors[Math.floor(Math.random() * colors.length)]);
+            }, i * 20); // Stagger the confetti
+        }
+    }
+
+    createConfettiPiece(color) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'fixed';
+        confetti.style.width = '10px';
+        confetti.style.height = '10px';
+        confetti.style.backgroundColor = color;
+        confetti.style.left = Math.random() * window.innerWidth + 'px';
+        confetti.style.top = '-20px';
+        confetti.style.opacity = '1';
+        confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+        confetti.style.pointerEvents = 'none';
+        confetti.style.zIndex = '10000';
+        confetti.style.borderRadius = '50%';
+        
+        document.body.appendChild(confetti);
+        
+        // Animate falling
+        const duration = 2000 + Math.random() * 1000;
+        const angle = Math.random() * 360;
+        const distance = 50 + Math.random() * 100;
+        
+        confetti.animate([
+            { 
+                transform: `translate(0, 0) rotate(0deg)`,
+                opacity: 1
+            },
+            { 
+                transform: `translate(${Math.cos(angle) * distance}px, ${window.innerHeight + 20}px) rotate(${360 + Math.random() * 360}deg)`,
+                opacity: 0
+            }
+        ], {
+            duration: duration,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        });
+        
+        // Remove element after animation
+        setTimeout(() => {
+            confetti.remove();
+        }, duration);
     }
 
     startReplay() {
