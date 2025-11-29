@@ -119,9 +119,9 @@ class BlindAttack4App {
     }
 
     drawEmptyBoard() {
-        // Draw an empty Connect 4 board for visual reference
+        // Draw an empty Connect 4 board for visual reference with numbers
         const emptyBoard = Array(6).fill(null).map(() => Array(7).fill(0));
-        this.blindBoardRenderer.draw(emptyBoard);
+        this.blindBoardRenderer.draw(emptyBoard, true);
     }
 
     updateGameUI(animateBotMove = false) {
@@ -186,15 +186,26 @@ class BlindAttack4App {
     }
 
     flashColumn(col) {
-        // Flash the column button yellow to show it was clicked
+        // Flash the entire column on the canvas yellow
+        const emptyBoard = Array(6).fill(null).map(() => Array(7).fill(0));
+        
+        // Set the flashing column
+        this.blindBoardRenderer.flashColumn(col);
+        this.blindBoardRenderer.draw(emptyBoard, true);
+        
+        // Clear flash after animation
+        setTimeout(() => {
+            this.blindBoardRenderer.clearFlash();
+            this.blindBoardRenderer.draw(emptyBoard, true);
+        }, 500);
+        
+        // Also flash the button
         const button = document.querySelector(`[data-column="${col}"]`);
         if (button) {
             button.classList.remove('flash-column');
-            // Force reflow
             void button.offsetWidth;
             button.classList.add('flash-column');
             
-            // Remove class after animation completes
             setTimeout(() => {
                 button.classList.remove('flash-column');
             }, 500);

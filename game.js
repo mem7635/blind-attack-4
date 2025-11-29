@@ -1,7 +1,7 @@
 // game.js - Connect 4 Game Logic with AI
-// Version 1.4.0
+// Version 1.5.0
 
-const VERSION = '1.4.0';
+const VERSION = '1.5.0';
 
 const ROWS = 6;
 const COLS = 7;
@@ -335,16 +335,19 @@ class BoardRenderer {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.cellSize = 50;
-        this.padding = 10;
+        this.padding = 0;
+        this.flashingColumn = -1;
+        this.showNumbers = false;
     }
 
-    draw(board) {
+    draw(board, showNumbers = false) {
         const ctx = this.ctx;
         const cellSize = this.cellSize;
         const padding = this.padding;
+        this.showNumbers = showNumbers;
 
-        // Clear canvas
-        ctx.fillStyle = '#2563eb';
+        // Clear canvas - dark background
+        ctx.fillStyle = '#1e293b';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Draw cells
@@ -353,8 +356,11 @@ class BoardRenderer {
                 const x = padding + col * cellSize;
                 const y = padding + (ROWS - 1 - row) * cellSize;
 
-                // Draw cell background
-                ctx.fillStyle = '#1e40af';
+                // Check if this column is flashing
+                const isFlashing = this.flashingColumn === col;
+
+                // Draw cell background - darker theme
+                ctx.fillStyle = isFlashing ? '#fbbf24' : '#334155';
                 ctx.fillRect(x, y, cellSize, cellSize);
 
                 // Draw piece
@@ -373,11 +379,32 @@ class BoardRenderer {
                 }
 
                 // Draw cell border
-                ctx.strokeStyle = '#3b82f6';
+                ctx.strokeStyle = '#475569';
                 ctx.lineWidth = 2;
                 ctx.strokeRect(x, y, cellSize, cellSize);
+
+                // Draw column numbers in top row
+                if (showNumbers && row === ROWS - 1) {
+                    ctx.fillStyle = isFlashing ? '#1e293b' : '#94a3b8';
+                    ctx.font = 'bold 24px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(
+                        (col + 1).toString(),
+                        x + cellSize / 2,
+                        y + cellSize / 2
+                    );
+                }
             }
         }
+    }
+
+    flashColumn(col) {
+        this.flashingColumn = col;
+    }
+
+    clearFlash() {
+        this.flashingColumn = -1;
     }
 }
 
