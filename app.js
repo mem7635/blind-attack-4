@@ -16,6 +16,7 @@ class BlindAttack4App {
         this.initializeElements();
         this.attachEventListeners();
         this.showScreen('start');
+        this.displayVersion();
     }
 
     initializeElements() {
@@ -98,6 +99,13 @@ class BlindAttack4App {
         Object.values(this.screens).forEach(screen => screen.classList.remove('active'));
         this.screens[screenName].classList.add('active');
         this.currentScreen = screenName;
+    }
+
+    displayVersion() {
+        const versionElement = document.getElementById('version-number');
+        if (versionElement && typeof VERSION !== 'undefined') {
+            versionElement.textContent = VERSION;
+        }
     }
 
     startNewGame() {

@@ -1,4 +1,7 @@
 // game.js - Connect 4 Game Logic with AI
+// Version 1.1.0
+
+const VERSION = '1.1.0';
 
 const ROWS = 6;
 const COLS = 7;
@@ -12,6 +15,14 @@ const DIFFICULTY_LEVELS = {
     'medium': 4,
     'hard': 6,
     'very-hard': 8
+};
+
+// AI strategy mix - what percentage of moves use minimax vs random
+const DIFFICULTY_STRATEGY = {
+    'easy': { minimax: 0.33, random: 0.67 },        // 1/3 smart, 2/3 random
+    'medium': { minimax: 0.60, random: 0.40 },      // 60% smart, 40% random
+    'hard': { minimax: 0.85, random: 0.15 },        // 85% smart, 15% random
+    'very-hard': { minimax: 0.95, random: 0.05 }    // 95% smart, 5% random
 };
 
 class Connect4Game {
@@ -290,33 +301,27 @@ class Connect4Game {
     getAIMove() {
         this.aiMoveCount++;
         
-        // Determine if AI should make a mistake based on difficulty
-        const mistakeChances = {
-            'easy': 0.35,        // ~35% chance (roughly every 3 moves)
-            'medium': 0.20,      // ~20% chance (roughly every 5 moves)
-            'hard': 0.10,        // ~10% chance (roughly every 10 moves)
-            'very-hard': 0.05    // ~5% chance (rarely makes mistakes)
-        };
+        const strategy = DIFFICULTY_STRATEGY[this.difficulty];
+        const useRandomMove = Math.random() < strategy.random;
         
-        const shouldMakeMistake = Math.random() < mistakeChances[this.difficulty];
-        
-        // Always check if AI can win (even on easy, don't miss wins)
+        // Always check if AI can win (don't miss obvious wins on any difficulty)
         const winningMove = this.canWinInOneMove(AI);
-        if (winningMove !== null && !shouldMakeMistake) return winningMove;
+        if (winningMove !== null) return winningMove;
 
-        // Always check if player can win and block (critical move)
+        // Always check if player can win and block (critical defensive move)
         const blockMove = this.canWinInOneMove(PLAYER);
-        if (blockMove !== null && !shouldMakeMistake) return blockMove;
+        if (blockMove !== null) return blockMove;
 
-        // If should make a mistake, choose a random valid move
-        if (shouldMakeMistake) {
+        // Decide between random and strategic move based on difficulty
+        if (useRandomMove) {
+            // Make a random move (easier difficulties do this more often)
             const validMoves = this.getValidMoves();
             return validMoves[Math.floor(Math.random() * validMoves.length)];
+        } else {
+            // Use minimax for strategic move
+            const [bestMove] = this.minimax(this.aiDepth, -Infinity, Infinity, true);
+            return bestMove;
         }
-
-        // Use minimax for strategic move
-        const [bestMove] = this.minimax(this.aiDepth, -Infinity, Infinity, true);
-        return bestMove;
     }
 
     copyBoard() {
