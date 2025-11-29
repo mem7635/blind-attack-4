@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Blind Attack 4">
+    <title>Blind Attack 4</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <div class="container">
+                <h1 class="game-title">🎯 Blind Attack 4</h1>
+                <p class="subtitle">Connect 4... but you can't see the board!</p>
+                
+                <div class="difficulty-selection">
+                    <h2>Select Difficulty</h2>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-btn" data-difficulty="easy">Easy</button>
+                        <button class="difficulty-btn selected" data-difficulty="medium">Medium</button>
+                        <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+                        <button class="difficulty-btn" data-difficulty="very-hard">Very Hard</button>
+                    </div>
+                </div>
+                
+                <button id="start-game-btn" class="primary-btn">Start Game</button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="container">
+                <div class="game-header">
+                    <h2>🎯 Blind Attack 4</h2>
+                    <div class="stats">
+                        <span id="move-count">Move: 0</span>
+                        <span id="blunder-count">Blunders: 0</span>
+                    </div>
+                </div>
+
+                <div class="bot-info">
+                    <h3>Bot's Last Move:</h3>
+                    <div id="bot-last-move" class="bot-move-display">-</div>
+                </div>
+
+                <div class="column-buttons">
+                    <button class="column-btn" data-column="0">1</button>
+                    <button class="column-btn" data-column="1">2</button>
+                    <button class="column-btn" data-column="2">3</button>
+                    <button class="column-btn" data-column="3">4</button>
+                    <button class="column-btn" data-column="4">5</button>
+                    <button class="column-btn" data-column="5">6</button>
+                    <button class="column-btn" data-column="6">7</button>
+                </div>
+
+                <button id="quit-btn" class="secondary-btn">Quit Game</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <div class="container">
+                <h1 id="result-title" class="result-title"></h1>
+                
+                <div class="result-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Moves:</span>
+                        <span id="final-moves" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Blunders:</span>
+                        <span id="final-blunders" class="stat-value">0</span>
+                    </div>
+                </div>
+
+                <div class="board-container">
+                    <canvas id="game-board" width="350" height="300"></canvas>
+                </div>
+
+                <div class="result-actions">
+                    <button id="replay-btn" class="primary-btn">▶️ Watch Replay</button>
+                    <button id="new-game-btn" class="primary-btn">New Game</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Replay Screen -->
+        <div id="replay-screen" class="screen">
+            <div class="container">
+                <h2>📽️ Game Replay</h2>
+                
+                <div class="replay-info">
+                    <span id="replay-move-info">Move 0 of 0</span>
+                </div>
+
+                <div class="board-container">
+                    <canvas id="replay-board" width="350" height="300"></canvas>
+                </div>
+
+                <div class="replay-controls">
+                    <button id="replay-prev" class="control-btn">⏮️ Prev</button>
+                    <button id="replay-play-pause" class="control-btn">▶️ Play</button>
+                    <button id="replay-next" class="control-btn">⏭️ Next</button>
+                </div>
+
+                <button id="replay-back-btn" class="secondary-btn">Back to Results</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker registration failed:', err));
+        }
+    </script>
+</body>
+</html>
+

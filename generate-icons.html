@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Icons for Blind Attack 4</h1>
+        <p>Click the buttons below to download the icon images for your PWA.</p>
+        
+        <canvas id="canvas192" width="192" height="192"></canvas>
+        <button onclick="downloadIcon(192)">Download 192x192 Icon</button>
+        
+        <br>
+        
+        <canvas id="canvas512" width="512" height="512"></canvas>
+        <button onclick="downloadIcon(512)">Download 512x512 Icon</button>
+    </div>
+
+    <script>
+        function drawIcon(canvas) {
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            const scale = size / 512;
+
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, size / 5);
+            ctx.fill();
+
+            // Draw Connect 4 grid
+            ctx.save();
+            ctx.translate(80 * scale, 100 * scale);
+
+            // Grid background
+            ctx.fillStyle = '#2563eb';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, 352 * scale, 302 * scale, 20 * scale);
+            ctx.fill();
+
+            // Draw circles
+            const circles = [
+                // Row 1
+                [25, 25, '#fbbf24'], [77, 25, '#ef4444'], [129, 25, '#fbbf24'], [181, 25, '#ef4444'],
+                [233, 25, '#1e40af'], [285, 25, '#1e40af'], [337, 25, '#1e40af'],
+                // Row 2
+                [25, 77, '#ef4444'], [77, 77, '#fbbf24'], [129, 77, '#ef4444'], [181, 77, '#fbbf24'],
+                [233, 77, '#1e40af'], [285, 77, '#1e40af'], [337, 77, '#1e40af'],
+                // Row 3
+                [25, 129, '#fbbf24'], [77, 129, '#ef4444'], [129, 129, '#fbbf24'], [181, 129, '#ef4444'],
+                [233, 129, '#1e40af'], [285, 129, '#1e40af'], [337, 129, '#1e40af'],
+                // Row 4
+                [25, 181, '#ef4444'], [77, 181, '#fbbf24'], [129, 181, '#ef4444'], [181, 181, '#1e40af'],
+                [233, 181, '#1e40af'], [285, 181, '#1e40af'], [337, 181, '#1e40af'],
+                // Row 5
+                [25, 233, '#1e40af'], [77, 233, '#1e40af'], [129, 233, '#1e40af'], [181, 233, '#1e40af'],
+                [233, 233, '#1e40af'], [285, 233, '#1e40af'], [337, 233, '#1e40af'],
+                // Row 6
+                [25, 285, '#1e40af'], [77, 285, '#1e40af'], [129, 285, '#1e40af'], [181, 285, '#1e40af'],
+                [233, 285, '#1e40af'], [285, 285, '#1e40af'], [337, 285, '#1e40af']
+            ];
+
+            circles.forEach(([x, y, color]) => {
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x * scale, y * scale, 20 * scale, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.restore();
+
+            // Draw eye icon (blind theme)
+            ctx.save();
+            ctx.translate(180 * scale, 420 * scale);
+            
+            // Eye ellipse
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath();
+            ctx.ellipse(75 * scale, 25 * scale, 70 * scale, 35 * scale, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Pupil
+            ctx.fillStyle = '#667eea';
+            ctx.beginPath();
+            ctx.arc(75 * scale, 25 * scale, 20 * scale, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Slash
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 8 * scale;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(20 * scale, 5 * scale);
+            ctx.lineTo(130 * scale, 45 * scale);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        // Draw icons on load
+        drawIcon(document.getElementById('canvas192'));
+        drawIcon(document.getElementById('canvas512'));
+
+        function downloadIcon(size) {
+            const canvas = document.getElementById('canvas' + size);
+            const link = document.createElement('a');
+            link.download = 'icon-' + size + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>
+
