@@ -1,7 +1,7 @@
 // game.js - Connect 4 Game Logic with AI
-// Version 1.5.0
+// Version 1.6.0
 
-const VERSION = '1.5.0';
+const VERSION = '1.6.0';
 
 const ROWS = 6;
 const COLS = 7;
@@ -337,6 +337,8 @@ class BoardRenderer {
         this.cellSize = 50;
         this.padding = 0;
         this.flashingColumn = -1;
+        this.flashColor = '#fbbf24';
+        this.flashIntensity = 1.0;
         this.showNumbers = false;
     }
 
@@ -359,8 +361,18 @@ class BoardRenderer {
                 // Check if this column is flashing
                 const isFlashing = this.flashingColumn === col;
 
-                // Draw cell background - darker theme
-                ctx.fillStyle = isFlashing ? '#fbbf24' : '#334155';
+                // Draw cell background - darker theme with flash effect
+                if (isFlashing) {
+                    if (this.flashIntensity < 1.0) {
+                        // Faint flash - blend with background
+                        ctx.fillStyle = this.blendColors('#334155', this.flashColor, this.flashIntensity);
+                    } else {
+                        // Full flash
+                        ctx.fillStyle = this.flashColor;
+                    }
+                } else {
+                    ctx.fillStyle = '#334155';
+                }
                 ctx.fillRect(x, y, cellSize, cellSize);
 
                 // Draw piece
@@ -399,8 +411,30 @@ class BoardRenderer {
         }
     }
 
-    flashColumn(col) {
+    blendColors(color1, color2, ratio) {
+        // Simple color blending for faint effect
+        const hex1 = color1.replace('#', '');
+        const hex2 = color2.replace('#', '');
+        
+        const r1 = parseInt(hex1.substr(0, 2), 16);
+        const g1 = parseInt(hex1.substr(2, 2), 16);
+        const b1 = parseInt(hex1.substr(4, 2), 16);
+        
+        const r2 = parseInt(hex2.substr(0, 2), 16);
+        const g2 = parseInt(hex2.substr(2, 2), 16);
+        const b2 = parseInt(hex2.substr(4, 2), 16);
+        
+        const r = Math.round(r1 + (r2 - r1) * ratio);
+        const g = Math.round(g1 + (g2 - g1) * ratio);
+        const b = Math.round(b1 + (b2 - b1) * ratio);
+        
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+
+    flashColumn(col, color = '#fbbf24', intensity = 1.0) {
         this.flashingColumn = col;
+        this.flashColor = color;
+        this.flashIntensity = intensity;
     }
 
     clearFlash() {

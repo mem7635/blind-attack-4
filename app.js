@@ -185,12 +185,32 @@ class BlindAttack4App {
         }
     }
 
-    flashColumn(col) {
-        // Flash the entire column on the canvas yellow
+    flashColumn(col, isPlayerMove = true) {
+        // Determine flash behavior based on difficulty
+        let shouldFlash = false;
+        let flashColor = '#fbbf24'; // yellow
+        let flashIntensity = 1.0;
+        
+        if (this.difficulty === 'easy') {
+            // Easy: Full flash for both player (yellow) and AI (red)
+            shouldFlash = true;
+            flashColor = isPlayerMove ? '#fbbf24' : '#ef4444'; // yellow for player, red for AI
+            flashIntensity = 1.0;
+        } else if (this.difficulty === 'medium' && isPlayerMove) {
+            // Medium: Faint yellow flash for player only
+            shouldFlash = true;
+            flashColor = '#fbbf24';
+            flashIntensity = 0.3; // faint
+        }
+        // Hard and Very Hard: no flash (shouldFlash stays false)
+        
+        if (!shouldFlash) return;
+        
+        // Flash the entire column on the canvas
         const emptyBoard = Array(6).fill(null).map(() => Array(7).fill(0));
         
-        // Set the flashing column
-        this.blindBoardRenderer.flashColumn(col);
+        // Set the flashing column with color and intensity
+        this.blindBoardRenderer.flashColumn(col, flashColor, flashIntensity);
         this.blindBoardRenderer.draw(emptyBoard, true);
         
         // Clear flash after animation
@@ -199,24 +219,26 @@ class BlindAttack4App {
             this.blindBoardRenderer.draw(emptyBoard, true);
         }, 500);
         
-        // Also flash the button
-        const button = document.querySelector(`[data-column="${col}"]`);
-        if (button) {
-            button.classList.remove('flash-column');
-            void button.offsetWidth;
-            button.classList.add('flash-column');
-            
-            setTimeout(() => {
+        // Also flash the button for player moves only
+        if (isPlayerMove) {
+            const button = document.querySelector(`[data-column="${col}"]`);
+            if (button) {
                 button.classList.remove('flash-column');
-            }, 500);
+                void button.offsetWidth;
+                button.classList.add('flash-column');
+                
+                setTimeout(() => {
+                    button.classList.remove('flash-column');
+                }, 500);
+            }
         }
     }
 
     handlePlayerMove(col) {
         if (!this.game.isValidMove(col)) return;
 
-        // Flash the column button for visual feedback
-        this.flashColumn(col);
+        // Flash the column for visual feedback (player move)
+        this.flashColumn(col, true);
 
         // Check for blunder before making the move
         this.game.detectBlunder(col);
@@ -242,6 +264,9 @@ class BlindAttack4App {
         
         if (aiMove !== null) {
             this.game.makeMove(aiMove, AI);
+            
+            // Flash AI's column (only on easy mode - red)
+            this.flashColumn(aiMove, false);
             
             // Check if AI won
             winner = this.game.checkWinner();
