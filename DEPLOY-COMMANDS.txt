@@ -1,0 +1,76 @@
+====================================
+GITHUB PAGES DEPLOYMENT - NEXT STEPS
+====================================
+
+✅ COMPLETED:
+- Git repository initialized
+- All files committed (14 files)
+- Ready to push to GitHub
+
+📝 WHAT YOU NEED TO DO NOW:
+
+STEP 1: Create GitHub Repository
+---------------------------------
+1. Go to: https://github.com/new
+2. Repository name: blind-attack-4
+3. Description: Blind Attack 4 - Connect 4 game where you can't see the board
+4. Select: Public
+5. DO NOT initialize with README (we already have files)
+6. Click "Create repository"
+
+STEP 2: Push Your Code
+-----------------------
+After creating the repo, GitHub will show you commands.
+I've prepared them for you below. Just copy/paste into your terminal:
+
+(Make sure you're still in the blind-attack-4 folder)
+
+# Add your GitHub repo as remote
+git remote add origin https://github.com/YOUR-USERNAME/blind-attack-4.git
+
+# Push your code
+git branch -M main
+git push -u origin main
+
+STEP 3: Enable GitHub Pages
+----------------------------
+1. Go to your repository on GitHub
+2. Click "Settings" tab
+3. Scroll down to "Pages" (in left sidebar)
+4. Under "Source", select "Deploy from a branch"
+5. Select branch: main
+6. Select folder: / (root)
+7. Click "Save"
+8. Wait 1-2 minutes
+
+STEP 4: Access Your App
+------------------------
+Your app will be live at:
+https://YOUR-USERNAME.github.io/blind-attack-4
+
+Open this URL on your iPhone in Safari and "Add to Home Screen"!
+
+====================================
+TROUBLESHOOTING
+====================================
+
+If you get "permission denied":
+- You may need to authenticate with GitHub
+- Use: git config --global user.name "Your Name"
+- Use: git config --global user.email "your@email.com"
+- May need to set up SSH keys or use personal access token
+
+Alternative: Use GitHub Desktop
+- Download from: https://desktop.github.com/
+- Easier visual interface
+- No command line needed
+
+====================================
+QUICK REFERENCE
+====================================
+
+Current location: C:/Users/Marc/Desktop/attach4/blind-attack-4
+Git status: ✅ Initialized and committed
+Files: 14 files ready to deploy
+Next step: Create repo at github.com/new
+

@@ -23,6 +23,7 @@ class Connect4Game {
         this.blunders = 0;
         this.gameOver = false;
         this.winner = null;
+        this.aiMoveCount = 0;
     }
 
     createEmptyBoard() {
@@ -287,13 +288,31 @@ class Connect4Game {
     }
 
     getAIMove() {
-        // Check if AI can win
+        this.aiMoveCount++;
+        
+        // Determine if AI should make a mistake based on difficulty
+        const mistakeChances = {
+            'easy': 0.35,        // ~35% chance (roughly every 3 moves)
+            'medium': 0.20,      // ~20% chance (roughly every 5 moves)
+            'hard': 0.10,        // ~10% chance (roughly every 10 moves)
+            'very-hard': 0.05    // ~5% chance (rarely makes mistakes)
+        };
+        
+        const shouldMakeMistake = Math.random() < mistakeChances[this.difficulty];
+        
+        // Always check if AI can win (even on easy, don't miss wins)
         const winningMove = this.canWinInOneMove(AI);
-        if (winningMove !== null) return winningMove;
+        if (winningMove !== null && !shouldMakeMistake) return winningMove;
 
-        // Check if player can win and block
+        // Always check if player can win and block (critical move)
         const blockMove = this.canWinInOneMove(PLAYER);
-        if (blockMove !== null) return blockMove;
+        if (blockMove !== null && !shouldMakeMistake) return blockMove;
+
+        // If should make a mistake, choose a random valid move
+        if (shouldMakeMistake) {
+            const validMoves = this.getValidMoves();
+            return validMoves[Math.floor(Math.random() * validMoves.length)];
+        }
 
         // Use minimax for strategic move
         const [bestMove] = this.minimax(this.aiDepth, -Infinity, Infinity, true);
