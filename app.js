@@ -115,7 +115,7 @@ class BlindAttack4App {
         this.showScreen('game');
     }
 
-    updateGameUI() {
+    updateGameUI(animateBotMove = false) {
         // Update move count
         this.moveCountDisplay.textContent = `Move: ${this.game.moveHistory.length}`;
         
@@ -124,7 +124,13 @@ class BlindAttack4App {
         
         // Update bot's last move
         if (this.lastAIMove !== null) {
-            this.botLastMoveDisplay.textContent = (this.lastAIMove + 1).toString();
+            const moveNumber = (this.lastAIMove + 1).toString();
+            this.botLastMoveDisplay.textContent = moveNumber;
+            
+            // Animate and speak if requested
+            if (animateBotMove) {
+                this.animateAndSpeakBotMove(moveNumber);
+            }
         } else {
             this.botLastMoveDisplay.textContent = '-';
         }
@@ -134,6 +140,40 @@ class BlindAttack4App {
             const col = parseInt(btn.dataset.column);
             btn.disabled = !this.game.isValidMove(col);
         });
+    }
+
+    animateAndSpeakBotMove(moveNumber) {
+        // Add animation class
+        this.botLastMoveDisplay.classList.remove('animate-move');
+        // Force reflow to restart animation
+        void this.botLastMoveDisplay.offsetWidth;
+        this.botLastMoveDisplay.classList.add('animate-move');
+        
+        // Remove animation class after it completes
+        setTimeout(() => {
+            this.botLastMoveDisplay.classList.remove('animate-move');
+        }, 600);
+        
+        // Speak the number after 0.5 seconds
+        setTimeout(() => {
+            this.speakNumber(moveNumber);
+        }, 500);
+    }
+
+    speakNumber(number) {
+        // Use Web Speech API if available
+        if ('speechSynthesis' in window) {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(number);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            utterance.lang = 'en-US';
+            
+            window.speechSynthesis.speak(utterance);
+        }
     }
 
     handlePlayerMove(col) {
@@ -177,8 +217,8 @@ class BlindAttack4App {
             }
         }
 
-        // Update UI
-        this.updateGameUI();
+        // Update UI with animation and speech for bot move
+        this.updateGameUI(true);
     }
 
     endGame(result) {

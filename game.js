@@ -1,7 +1,7 @@
 // game.js - Connect 4 Game Logic with AI
-// Version 1.1.0
+// Version 1.2.0
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 
 const ROWS = 6;
 const COLS = 7;
